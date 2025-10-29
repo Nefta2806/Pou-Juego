@@ -3,7 +3,7 @@
 ![Pou](IMGS/Fondo.png)
 
 ## Descripción
-Pou Jump es un juego donde controlas a Pou saltando entre nubes para alcanzar la mayor altura posible.
+Pou Saltarin es un juego donde controlas a Pou saltando entre nubes para alcanzar la mayor altura posible.
 
 ## 🕹️ Controles
 - **Flecha Izquierda** o **A**: Mover a Pou hacia la izquierda
