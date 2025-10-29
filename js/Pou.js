@@ -1,7 +1,7 @@
 
 let tablero;
-let anchoTablero = 360;  // Volvemos al ta
-let altoTablero = 576;   // Volvemos al tamaño original que funciona
+let anchoTablero = 360;  
+let altoTablero = 576;    
 let contexto;
 
 
@@ -37,6 +37,11 @@ let imagenFondo;
 let puntuacion = 0;
 let puntuacionMaxima = 0;
 let juegoTerminado = false;
+
+
+let sonidoFondo;
+let sonidoActivo = true;
+let musicaCargada = false;
 
 window.onload = function() {
     tablero = document.getElementById("board");
@@ -75,6 +80,10 @@ window.onload = function() {
     document.addEventListener("keydown", moverPou);
     
     console.log("Juego iniciado correctamente");
+
+    inicializarSonido();
+    configurarControlesSonido();
+
 }
 
 function actualizar() {
@@ -108,7 +117,7 @@ function actualizar() {
         contexto.drawImage(pou.imagen, pou.x, pou.y, pou.ancho, pou.alto);
     }
 
-    // Plataformas (nubes)
+
     for (let i = 0; i < arrayPlataformas.length; i++) {
         let plataforma = arrayPlataformas[i];
         if (velocidadY < 0 && pou.y < altoTablero*3/4) {
@@ -122,13 +131,13 @@ function actualizar() {
         }
     }
 
-    // Limpiar plataformas y agregar nuevas
+
     while (arrayPlataformas.length > 0 && arrayPlataformas[0].y >= altoTablero) {
         arrayPlataformas.shift();
         nuevaPlataforma();
     }
 
-    // Puntuación
+
     actualizarPuntuacion();
     contexto.fillStyle = "white";
     contexto.font = "16px sans-serif";
@@ -175,7 +184,6 @@ function reiniciarJuego() {
 function colocarPlataformas() {
     arrayPlataformas = [];
 
-    // Plataforma inicial
     let plataforma = {
         imagen : imagenPlataforma,
         x : anchoTablero/2,
@@ -230,5 +238,88 @@ function actualizarPuntuacion() {
     }
     else if (velocidadY >= 0) {
         puntuacionMaxima -= puntos;
+    }
+}
+
+function inicializarSonido() {
+    sonidoFondo = document.getElementById('sonidoFondo');
+    sonidoFondo.volume = 0.3; // Volumen al 30% para que no sea muy fuerte
+    
+    // Intentar cargar y reproducir automáticamente (puede ser bloqueado por el navegador)
+    sonidoFondo.load();
+    
+    // Intentar reproducir cuando el usuario interactúe por primera vez
+    document.addEventListener('click', iniciarSonidoUnaVez);
+    document.addEventListener('keydown', iniciarSonidoUnaVez);
+}
+
+function iniciarSonidoUnaVez() {
+    if (!musicaCargada && sonidoActivo) {
+        sonidoFondo.play().then(() => {
+            musicaCargada = true;
+            console.log("Sonido de fondo iniciado");
+        }).catch(error => {
+            console.log("No se pudo reproducir el sonido automáticamente:", error);
+        });
+        
+        // Remover los event listeners después del primer intento
+        document.removeEventListener('click', iniciarSonidoUnaVez);
+        document.removeEventListener('keydown', iniciarSonidoUnaVez);
+    }
+}
+
+function configurarControlesSonido() {
+    const btnSonido = document.getElementById('btnSonido');
+    const btnSilenciar = document.getElementById('btnSilenciar');
+    
+    btnSonido.addEventListener('click', function() {
+        sonidoActivo = true;
+        sonidoFondo.volume = 0.3;
+        if (musicaCargada) {
+            sonidoFondo.play();
+        }
+        actualizarEstadoSonido();
+    });
+    
+    btnSilenciar.addEventListener('click', function() {
+        sonidoActivo = false;
+        sonidoFondo.pause();
+        actualizarEstadoSonido();
+    });
+}
+
+function actualizarEstadoSonido() {
+    const btnSonido = document.getElementById('btnSonido');
+    
+    if (sonidoActivo) {
+        btnSonido.textContent = '🔊 Sonido: ON';
+        btnSonido.classList.remove('sonido-silenciado');
+    } else {
+        btnSonido.textContent = '🔇 Sonido: OFF';
+        btnSonido.classList.add('sonido-silenciado');
+    }
+}
+
+// Modificar la función reiniciarJuego para manejar el sonido
+function reiniciarJuego() {
+    pou = {
+        imagen : imagenPouDerecha,
+        x : pouX,
+        y : pouY,
+        ancho : anchoPou,
+        alto : altoPou
+    }
+
+    velocidadX = 0;
+    velocidadY = velocidadInicialY;
+    puntuacion = 0;
+    puntuacionMaxima = 0;
+    juegoTerminado = false;
+    colocarPlataformas();
+    
+    // Reiniciar sonido si está activo
+    if (sonidoActivo && musicaCargada) {
+        sonidoFondo.currentTime = 0;
+        sonidoFondo.play();
     }
 }
