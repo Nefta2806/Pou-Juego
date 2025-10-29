@@ -243,12 +243,10 @@ function actualizarPuntuacion() {
 
 function inicializarSonido() {
     sonidoFondo = document.getElementById('sonidoFondo');
-    sonidoFondo.volume = 0.3; // Volumen al 30% para que no sea muy fuerte
-    
-    // Intentar cargar y reproducir automáticamente (puede ser bloqueado por el navegador)
+    sonidoFondo.volume = 0.2; 
+
     sonidoFondo.load();
     
-    // Intentar reproducir cuando el usuario interactúe por primera vez
     document.addEventListener('click', iniciarSonidoUnaVez);
     document.addEventListener('keydown', iniciarSonidoUnaVez);
 }
@@ -262,7 +260,6 @@ function iniciarSonidoUnaVez() {
             console.log("No se pudo reproducir el sonido automáticamente:", error);
         });
         
-        // Remover los event listeners después del primer intento
         document.removeEventListener('click', iniciarSonidoUnaVez);
         document.removeEventListener('keydown', iniciarSonidoUnaVez);
     }
@@ -300,7 +297,6 @@ function actualizarEstadoSonido() {
     }
 }
 
-// Modificar la función reiniciarJuego para manejar el sonido
 function reiniciarJuego() {
     pou = {
         imagen : imagenPouDerecha,
@@ -316,8 +312,7 @@ function reiniciarJuego() {
     puntuacionMaxima = 0;
     juegoTerminado = false;
     colocarPlataformas();
-    
-    // Reiniciar sonido si está activo
+
     if (sonidoActivo && musicaCargada) {
         sonidoFondo.currentTime = 0;
         sonidoFondo.play();
